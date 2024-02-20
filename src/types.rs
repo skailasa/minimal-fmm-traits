@@ -181,7 +181,7 @@ where
         self
     }
 
-    pub fn translation_type(mut self, m2l: U) -> Self {
+    pub fn expansions(mut self, order: usize, m2l: U) -> Self {
         self.m2l = Some(m2l);
         self
     }
@@ -223,7 +223,7 @@ where
         self
     }
 
-    pub fn translation_type(mut self, m2l: U) -> Self {
+    pub fn expansions(mut self, order: usize, m2l: U) -> Self {
         self.m2l = Some(m2l);
         self
     }

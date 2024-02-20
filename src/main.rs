@@ -6,10 +6,11 @@ fn main () {
     let targets = [0.];
     let sources = [0.];
     let charges = [0.];
+    let order = 5;
 
     let fmm = KiFmmBuilderSingleNode::new()
         .tree(&targets, &sources, &charges)
-        .translation_type(SourceToTargetDataSvd::new())
+        .expansions(order, SourceToTargetDataSvd::new())
         .build()
         .unwrap();
 
@@ -17,7 +18,7 @@ fn main () {
 
     let fmm = KiFmmBuilderMultiNode::new()
         .tree(&targets, &sources, &charges)
-        .translation_type(SourceToTargetDataFft::new())
+        .expansions(order, SourceToTargetDataFft::new())
         .build()
         .unwrap();
 
