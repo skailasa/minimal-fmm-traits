@@ -1,4 +1,4 @@
-use minimal_fmm_traits::{traits::Fmm, types::{EvalType, KiFmmBuilderSingleNode, SourceToTargetDataSvd, SourceToTargetDataFft}};
+use minimal_fmm_traits::{traits::Fmm, types::{EvalType, KiFmmBuilderMultiNode, KiFmmBuilderSingleNode, SourceToTargetDataFft, SourceToTargetDataSvd}};
 
 
 fn main () {
@@ -8,10 +8,18 @@ fn main () {
     let charges = [0.];
 
     let fmm = KiFmmBuilderSingleNode::new()
-        .particle_data(&targets, &sources, &charges)
+        .tree(&targets, &sources, &charges)
         .translation_type(SourceToTargetDataSvd::new())
         .build()
         .unwrap();
 
-    fmm.run(EvalType::ValueDeriv);
+    fmm.evaluate(EvalType::ValueDeriv);
+
+    let fmm = KiFmmBuilderMultiNode::new()
+        .tree(&targets, &sources, &charges)
+        .translation_type(SourceToTargetDataFft::new())
+        .build()
+        .unwrap();
+
+    fmm.evaluate(EvalType::Value);
 }

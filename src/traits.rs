@@ -24,7 +24,7 @@ pub trait Fmm
 where
     Self: SourceTranslation + TargetTranslation + SourceToTargetHomogenous
 {
-    fn run(&self, eval_type: EvalType);
+    fn evaluate(&self, eval_type: EvalType);
 }
 
 // Implemented over concrete tree

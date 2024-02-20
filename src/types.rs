@@ -1,3 +1,5 @@
+use num_traits::Float;
+
 use crate::traits::{Fmm, Kernel, ScaleInvariantKernel, SourceToTargetData, SourceToTargetHomogenous, SourceTranslation, TargetTranslation, Tree};
 
 pub enum EvalType {
@@ -10,6 +12,10 @@ pub enum  M2lType {
     Fft
 }
 
+pub enum TreeType {
+    SingleNode,
+    MultiNode,
+}
 
 // Contains tree + kernel + metadata required to compute FMM
 pub struct KiFmm<T: Tree, U: SourceToTargetData> {
@@ -26,8 +32,8 @@ pub struct SingleNodeFmmTree {
 }
 
 pub struct MultiNodeFmmTree {
-    source_tree: SingleNodeTree,
-    target_tree: SingleNodeTree
+    source_tree: MultiNodeTree,
+    target_tree: MultiNodeTree
 }
 
 pub struct SourceToTargetDataSvd {}
@@ -57,6 +63,16 @@ impl SourceTranslation for KiFmm<SingleNodeFmmTree, SourceToTargetDataFft> {
     fn p2m(&self) {}
 }
 
+impl SourceTranslation for KiFmm<MultiNodeFmmTree, SourceToTargetDataSvd> {
+    fn m2m(&self, level: usize) {}
+    fn p2m(&self) {}
+}
+
+impl SourceTranslation for KiFmm<MultiNodeFmmTree, SourceToTargetDataFft> {
+    fn m2m(&self, level: usize) {}
+    fn p2m(&self) {}
+}
+
 impl SourceToTargetData for SourceToTargetDataSvd {}
 impl SourceToTargetData for SourceToTargetDataFft {}
 
@@ -75,6 +91,20 @@ impl TargetTranslation for KiFmm<SingleNodeFmmTree, SourceToTargetDataFft> {
     fn p2p(&self, level: usize) {}
 }
 
+impl TargetTranslation for KiFmm<MultiNodeFmmTree, SourceToTargetDataSvd> {
+    fn l2l(&self, level: usize) {}
+    fn m2p(&self, level: usize) {}
+    fn l2p(&self, level: usize) {}
+    fn p2p(&self, level: usize) {}
+}
+
+impl TargetTranslation for KiFmm<MultiNodeFmmTree, SourceToTargetDataFft> {
+    fn l2l(&self, level: usize) {}
+    fn m2p(&self, level: usize) {}
+    fn l2p(&self, level: usize) {}
+    fn p2p(&self, level: usize) {}
+}
+
 impl SourceToTargetHomogenous for KiFmm<SingleNodeFmmTree, SourceToTargetDataSvd> {
     fn m2l(&self, level: usize) {}
     fn p2l(&self, level: usize) {}
@@ -82,6 +112,18 @@ impl SourceToTargetHomogenous for KiFmm<SingleNodeFmmTree, SourceToTargetDataSvd
 }
 
 impl SourceToTargetHomogenous for KiFmm<SingleNodeFmmTree, SourceToTargetDataFft> {
+    fn m2l(&self, level: usize) {}
+    fn p2l(&self, level: usize) {}
+    fn scale(&self) {}
+}
+
+impl SourceToTargetHomogenous for KiFmm<MultiNodeFmmTree, SourceToTargetDataSvd> {
+    fn m2l(&self, level: usize) {}
+    fn p2l(&self, level: usize) {}
+    fn scale(&self) {}
+}
+
+impl SourceToTargetHomogenous for KiFmm<MultiNodeFmmTree, SourceToTargetDataFft> {
     fn m2l(&self, level: usize) {}
     fn p2l(&self, level: usize) {}
     fn scale(&self) {}
@@ -107,6 +149,13 @@ where
     m2l: Option<T>,
 }
 
+pub struct KiFmmBuilderMultiNode<T>
+where
+    T: SourceToTargetData,
+{
+    tree: Option<MultiNodeFmmTree>,
+    m2l: Option<T>,
+}
 
 impl<U> KiFmmBuilderSingleNode<U>
 where
@@ -120,7 +169,8 @@ where
         }
     }
 
-    pub fn particle_data(mut self, targets: &[f64], sources: &[f64], charges: &[f64]) -> Self {
+    pub fn tree<T: Float>(mut self, targets: &[T], sources: &[T], charges: &[T]) -> Self {
+
         let source_tree = SingleNodeTree {};
         let target_tree = SingleNodeTree {};
         let fmm_tree = SingleNodeFmmTree {
@@ -149,9 +199,50 @@ where
     }
 }
 
+impl<U> KiFmmBuilderMultiNode<U>
+where
+    U: SourceToTargetData,
+{
+    // Start building with mandatory parameters
+    pub fn new() -> Self {
+        KiFmmBuilderMultiNode {
+            tree: None,
+            m2l: None,
+        }
+    }
+
+    pub fn tree<T: Float>(mut self, targets: &[T], sources: &[T], charges: &[T]) -> Self {
+
+        let source_tree = MultiNodeTree {};
+        let target_tree = MultiNodeTree {};
+        let fmm_tree = MultiNodeFmmTree {
+            source_tree,
+            target_tree
+        };
+        self.tree = Some(fmm_tree);
+        self
+    }
+
+    pub fn translation_type(mut self, m2l: U) -> Self {
+        self.m2l = Some(m2l);
+        self
+    }
+
+    // Finalize and build the KiFmm
+    pub fn build(self) -> Result<KiFmm<MultiNodeFmmTree, U>, String> {
+        if self.tree.is_none() || self.m2l.is_none() {
+            Err("Missing fields for KiFmm".to_string())
+        } else {
+            Ok(KiFmm {
+                tree: self.tree.unwrap(),
+                m2l: self.m2l.unwrap(),
+            })
+        }
+    }
+}
 
 impl Fmm for KiFmm<SingleNodeFmmTree, SourceToTargetDataFft> {
-    fn run(&self, eval_type: EvalType) {
+    fn evaluate(&self, eval_type: EvalType) {
 
         match eval_type {
             EvalType::Value  => println!("evaluating potentials"),
@@ -162,11 +253,32 @@ impl Fmm for KiFmm<SingleNodeFmmTree, SourceToTargetDataFft> {
 
 
 impl Fmm for KiFmm<SingleNodeFmmTree, SourceToTargetDataSvd> {
-    fn run(&self, eval_type: EvalType) {
+    fn evaluate(&self, eval_type: EvalType) {
 
         match eval_type {
             EvalType::Value  => println!("evaluating potentials"),
             EvalType::ValueDeriv => println!("evaluating potentials and derivatives")
+        }
+    }
+}
+
+impl Fmm for KiFmm<MultiNodeFmmTree, SourceToTargetDataFft> {
+    fn evaluate(&self, eval_type: EvalType) {
+
+        match eval_type {
+            EvalType::Value  => println!("evaluating potentials multinode"),
+            EvalType::ValueDeriv => println!("evaluating potentials and derivatives multinode")
+        }
+    }
+}
+
+
+impl Fmm for KiFmm<MultiNodeFmmTree, SourceToTargetDataSvd> {
+    fn evaluate(&self, eval_type: EvalType) {
+
+        match eval_type {
+            EvalType::Value  => println!("evaluating potentials multinode"),
+            EvalType::ValueDeriv => println!("evaluating potentials and derivatives multinode")
         }
     }
 }
