@@ -8,6 +8,7 @@ use minimal_fmm_traits::{
 fn main() {
     let targets = [0f64];
     let sources = [0f64];
+    let mut result = [0f64];
     let charges = [0f64];
     let expansion_order = 10;
     let n_crit = None;
@@ -21,7 +22,7 @@ fn main() {
             .build()
             .unwrap();
 
-        fmm.evaluate_vec(EvalType::Value, &charges);
+        fmm.evaluate_vec(EvalType::Value, &charges, &mut result);
     }
 
     // Multi node fmm
@@ -36,7 +37,7 @@ fn main() {
             .build()
             .unwrap();
 
-        fmm.evaluate_vec(EvalType::Value, &charges);
-        fmm.evaluate_mat(EvalType::Value, &charges);
+        fmm.evaluate_vec(EvalType::Value, &charges, &mut result);
+        fmm.evaluate_mat(EvalType::Value, &charges, &mut result);
     }
 }

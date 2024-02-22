@@ -65,78 +65,49 @@ impl<T: Float> SourceToTargetHomogenous for KiFmm<MultiNodeFmmTree<'_, T>, Sourc
     fn scale(&self) {}
 }
 
-impl<'points, T> Fmm<T> for KiFmm<SingleNodeFmmTree<'points, T>, SourceToTargetDataFft>
+impl<'fmm, T, U: SourceToTargetData> Fmm<T> for KiFmm<SingleNodeFmmTree<'fmm, T>, U>
 where
     T: Float,
+    Self: SourceToTargetHomogenous
 {
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T]) {
+    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T], result: &mut [T]) {
         match eval_type {
             EvalType::Value => println!("evaluating potentials"),
             EvalType::ValueDeriv => println!("evaluating potentials and derivatives"),
         }
     }
-
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T]) {}
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T], result: &mut [T]) {}
 }
 
-impl<'fmm, T> Fmm<T> for KiFmm<SingleNodeFmmTree<'fmm, T>, SourceToTargetDataSvd>
+impl<'fmm, T, U> Fmm<T> for KiFmm<MultiNodeFmmTree<'fmm, T>, U>
 where
     T: Float,
+    U: SourceToTargetData,
+    Self: SourceToTargetHomogenous
 {
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T]) {
-        match eval_type {
-            EvalType::Value => println!("evaluating potentials"),
-            EvalType::ValueDeriv => println!("evaluating potentials and derivatives"),
-        }
-    }
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T]) {}
-}
-
-impl<'fmm, T> Fmm<T> for KiFmm<MultiNodeFmmTree<'fmm, T>, SourceToTargetDataFft>
-where
-    T: Float,
-{
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T]) {
+    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T], result: &mut [T]) {
         match eval_type {
             EvalType::Value => println!(
-                "evaluating potentials multinode rank; {:?} order {:?} with vector of charges",
+                "evaluating potentials multinode rank; {:?} with vector of charges",
                 self.tree.comm.rank(),
-                self.m2l.expansion_order
             ),
             EvalType::ValueDeriv => println!(
-                "evaluating potentials and derivatives multinode rank: {:?} order {:?} with vector of charges",
+                "evaluating potentials and derivatives multinode rank: {:?}  with vector of charges",
                 self.tree.comm.rank(),
-                self.m2l.expansion_order
             ),
         }
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T]) {
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T], result: &mut [T]) {
         match eval_type {
             EvalType::Value => println!(
-                "evaluating potentials multinode rank; {:?} order {:?} with matrix of charges",
+                "evaluating potentials multinode rank; {:?} with matrix of charges",
                 self.tree.comm.rank(),
-                self.m2l.expansion_order
             ),
             EvalType::ValueDeriv => println!(
-                "evaluating potentials and derivatives multinode rank: {:?} order {:?} with matrix of charges",
+                "evaluating potentials and derivatives multinode rank: {:?} with matrix of charges",
                 self.tree.comm.rank(),
-                self.m2l.expansion_order
             ),
         }
     }
-}
-
-impl<'fmm, T> Fmm<T> for KiFmm<MultiNodeFmmTree<'fmm, T>, SourceToTargetDataSvd>
-where
-    T: Float,
-{
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T]) {
-        match eval_type {
-            EvalType::Value => println!("evaluating potentials multinode"),
-            EvalType::ValueDeriv => println!("evaluating potentials and derivatives multinode"),
-        }
-    }
-
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T]) {}
 }

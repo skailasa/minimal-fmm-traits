@@ -20,14 +20,14 @@ pub trait SourceToTargetHomogenous {
 }
 
 // Implemented over Concrete FMM
-pub trait Fmm<U>
+pub trait Fmm<T>
 where
     Self: SourceTranslation + TargetTranslation + SourceToTargetHomogenous,
-    U: num_traits::Float,
+    T: num_traits::Float,
 {
-    fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[U]);
+    fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[T], result: &mut [T]);
 
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[U]);
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T], result: &mut [T]);
 }
 
 // Implemented over concrete tree
