@@ -1,9 +1,8 @@
 use minimal_fmm_traits::{
+    builder::{KiFmmBuilderMultiNode, KiFmmBuilderSingleNode},
+    field_translations::{SourceToTargetDataFft, SourceToTargetDataSvd},
+    other::EvalType,
     traits::Fmm,
-    types::{
-        EvalType, KiFmmBuilderMultiNode, KiFmmBuilderSingleNode, SourceToTargetDataFft,
-        SourceToTargetDataSvd,
-    },
 };
 
 fn main() {

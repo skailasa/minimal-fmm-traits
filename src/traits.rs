@@ -1,4 +1,4 @@
-use crate::types::EvalType;
+use crate::other::EvalType;
 
 // Implemented over DataTree
 pub trait SourceTranslation {
