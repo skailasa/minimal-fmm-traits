@@ -99,12 +99,12 @@ where
     fn evaluate_vec(&self, eval_type: EvalType, charges: &[T]) {
         match eval_type {
             EvalType::Value => println!(
-                "evaluating potentials multinode rank; {:?} order {:?}",
+                "evaluating potentials multinode rank; {:?} order {:?} with vector of charges",
                 self.tree.comm.rank(),
                 self.m2l.expansion_order
             ),
             EvalType::ValueDeriv => println!(
-                "evaluating potentials and derivatives multinode rank: {:?} order {:?}",
+                "evaluating potentials and derivatives multinode rank: {:?} order {:?} with vector of charges",
                 self.tree.comm.rank(),
                 self.m2l.expansion_order
             ),
