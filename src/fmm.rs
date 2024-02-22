@@ -17,48 +17,24 @@ pub struct KiFmm<T: Tree, U: SourceToTargetData> {
     pub m2l: U,
 }
 
-impl<U: Float> SourceTranslation for KiFmm<SingleNodeFmmTree<'_, U>, SourceToTargetDataSvd> {
+impl<T: Float, U: SourceToTargetData> SourceTranslation for KiFmm<SingleNodeFmmTree<'_, T>, U> {
     fn m2m(&self, level: usize) {}
     fn p2m(&self) {}
 }
 
-impl<U: Float> SourceTranslation for KiFmm<SingleNodeFmmTree<'_, U>, SourceToTargetDataFft> {
+impl<T: Float, U: SourceToTargetData> SourceTranslation for KiFmm<MultiNodeFmmTree<'_, T>, U> {
     fn m2m(&self, level: usize) {}
     fn p2m(&self) {}
 }
 
-impl<T: Float> SourceTranslation for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataSvd> {
-    fn m2m(&self, level: usize) {}
-    fn p2m(&self) {}
-}
-
-impl<T: Float> SourceTranslation for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataFft> {
-    fn m2m(&self, level: usize) {}
-    fn p2m(&self) {}
-}
-
-impl<T: Float> TargetTranslation for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataSvd> {
+impl<T: Float, U: SourceToTargetData> TargetTranslation for KiFmm<SingleNodeFmmTree<'_, T>, U> {
     fn l2l(&self, level: usize) {}
     fn m2p(&self, level: usize) {}
     fn l2p(&self, level: usize) {}
     fn p2p(&self, level: usize) {}
 }
 
-impl<T: Float> TargetTranslation for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataFft> {
-    fn l2l(&self, level: usize) {}
-    fn m2p(&self, level: usize) {}
-    fn l2p(&self, level: usize) {}
-    fn p2p(&self, level: usize) {}
-}
-
-impl<T: Float> TargetTranslation for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataSvd> {
-    fn l2l(&self, level: usize) {}
-    fn m2p(&self, level: usize) {}
-    fn l2p(&self, level: usize) {}
-    fn p2p(&self, level: usize) {}
-}
-
-impl<T: Float> TargetTranslation for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataFft> {
+impl<T: Float, U: SourceToTargetData> TargetTranslation for KiFmm<MultiNodeFmmTree<'_, T>, U> {
     fn l2l(&self, level: usize) {}
     fn m2p(&self, level: usize) {}
     fn l2p(&self, level: usize) {}
@@ -125,12 +101,12 @@ where
             EvalType::Value => println!(
                 "evaluating potentials multinode rank; {:?} order {:?}",
                 self.tree.comm.rank(),
-                self.m2l.order
+                self.m2l.expansion_order
             ),
             EvalType::ValueDeriv => println!(
                 "evaluating potentials and derivatives multinode rank: {:?} order {:?}",
                 self.tree.comm.rank(),
-                self.m2l.order
+                self.m2l.expansion_order
             ),
         }
     }

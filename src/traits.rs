@@ -44,5 +44,5 @@ where
 pub trait Kernel {}
 
 pub trait SourceToTargetData {
-    fn set_order(&mut self, order: usize) {}
+    fn set_expansion_order(&mut self, expansion_order: usize);
 }

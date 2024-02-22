@@ -9,14 +9,15 @@ fn main() {
     let targets = [0f64];
     let sources = [0f64];
     let charges = [0f64];
-    let order = 10;
-    let n_crit = 150; // Should get away without specifying, just choose a default decent value
+    let expansion_order = 10;
+    // let n_crit = Some(150);
+    let n_crit = None;
 
     // Single node fmm
     {
         let fmm = KiFmmBuilderSingleNode::new()
             .tree(&targets, &sources, n_crit)
-            .parameters(order, SourceToTargetDataSvd::new())
+            .parameters(expansion_order, SourceToTargetDataSvd::new())
             .build()
             .unwrap();
 
@@ -30,7 +31,7 @@ fn main() {
 
         let fmm = KiFmmBuilderMultiNode::new()
             .tree(&targets, &sources, n_crit, world)
-            .parameters(order, SourceToTargetDataFft::new())
+            .parameters(expansion_order, SourceToTargetDataFft::new())
             .build()
             .unwrap();
 

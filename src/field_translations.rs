@@ -1,31 +1,35 @@
 use crate::traits::SourceToTargetData;
 
+#[derive(Default)]
 pub struct SourceToTargetDataSvd {
-    pub order: usize,
+    pub expansion_order: usize,
 }
+
+#[derive(Default)]
 pub struct SourceToTargetDataFft {
-    pub order: usize,
+    pub expansion_order: usize,
 }
 
 impl SourceToTargetData for SourceToTargetDataSvd {
-    fn set_order(&mut self, order: usize) {
-        self.order = order;
+    fn set_expansion_order(&mut self, expansion_order: usize) {
+        self.expansion_order = expansion_order
     }
 }
+
 impl SourceToTargetData for SourceToTargetDataFft {
-    fn set_order(&mut self, order: usize) {
-        self.order = order;
+    fn set_expansion_order(&mut self, expansion_order: usize) {
+        self.expansion_order = expansion_order
     }
 }
 
 impl SourceToTargetDataFft {
     pub fn new() -> Self {
-        SourceToTargetDataFft { order: 1 }
+        SourceToTargetDataFft { expansion_order: 1 }
     }
 }
 
 impl SourceToTargetDataSvd {
     pub fn new() -> Self {
-        SourceToTargetDataSvd { order: 1 }
+        SourceToTargetDataSvd { expansion_order: 1 }
     }
 }

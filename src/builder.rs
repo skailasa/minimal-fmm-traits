@@ -7,6 +7,7 @@ use crate::{
     tree::{MultiNodeFmmTree, MultiNodeTree, SingleNodeFmmTree, SingleNodeTree},
 };
 
+#[derive(Default)]
 pub struct KiFmmBuilderSingleNode<'tree, T, U>
 where
     T: SourceToTargetData,
@@ -17,6 +18,7 @@ where
     order: Option<usize>,
 }
 
+#[derive(Default)]
 pub struct KiFmmBuilderMultiNode<'builder, T, U, V>
 where
     T: SourceToTargetData,
@@ -43,20 +45,37 @@ where
         }
     }
 
-    pub fn tree(mut self, targets: &'builder [U], sources: &'builder [U], n_crit: usize) -> Self {
-        let source_tree = SingleNodeTree { points: sources };
-        let target_tree = SingleNodeTree { points: targets };
-        let fmm_tree = SingleNodeFmmTree {
-            source_tree,
-            target_tree,
-        };
-        self.tree = Some(fmm_tree);
-        self
+    pub fn tree(
+        mut self,
+        targets: &'builder [U],
+        sources: &'builder [U],
+        n_crit: Option<usize>,
+    ) -> Self {
+        if n_crit.is_some() {
+            let source_tree = SingleNodeTree { points: sources };
+            let target_tree = SingleNodeTree { points: targets };
+            let fmm_tree = SingleNodeFmmTree {
+                source_tree,
+                target_tree,
+            };
+            self.tree = Some(fmm_tree);
+            self
+        } else {
+            // Determine n crit from data
+            let source_tree = SingleNodeTree { points: sources };
+            let target_tree = SingleNodeTree { points: targets };
+            let fmm_tree = SingleNodeFmmTree {
+                source_tree,
+                target_tree,
+            };
+            self.tree = Some(fmm_tree);
+            self
+        }
     }
 
-    pub fn parameters(mut self, order: usize, mut source_to_target: T) -> Self {
-        source_to_target.set_order(order);
-        self.order = Some(order);
+    pub fn parameters(mut self, expansion_order: usize, mut source_to_target: T) -> Self {
+        source_to_target.set_expansion_order(expansion_order);
+        self.order = Some(expansion_order);
         self.source_to_target = Some(source_to_target);
         self
     }
@@ -99,25 +118,40 @@ where
         mut self,
         targets: &'builder [V],
         sources: &'builder [V],
-        n_crit: usize,
+        n_crit: Option<usize>,
         comm: U,
     ) -> Self {
-        let source_tree = MultiNodeTree { points: sources };
-        let target_tree = MultiNodeTree { points: targets };
+        if n_crit.is_some() {
+            let source_tree = MultiNodeTree { points: sources };
+            let target_tree = MultiNodeTree { points: targets };
 
-        let comm = comm.duplicate();
-        let fmm_tree = MultiNodeFmmTree {
-            comm,
-            source_tree,
-            target_tree,
-        };
-        self.tree = Some(fmm_tree);
-        self
+            let comm = comm.duplicate();
+            let fmm_tree = MultiNodeFmmTree {
+                comm,
+                source_tree,
+                target_tree,
+            };
+            self.tree = Some(fmm_tree);
+            self
+        } else {
+            // Determine n crit from data
+            let source_tree = MultiNodeTree { points: sources };
+            let target_tree = MultiNodeTree { points: targets };
+
+            let comm = comm.duplicate();
+            let fmm_tree = MultiNodeFmmTree {
+                comm,
+                source_tree,
+                target_tree,
+            };
+            self.tree = Some(fmm_tree);
+            self
+        }
     }
 
-    pub fn parameters(mut self, order: usize, mut source_to_target: T) -> Self {
-        source_to_target.set_order(order);
-        self.order = Some(order);
+    pub fn parameters(mut self, expansion_order: usize, mut source_to_target: T) -> Self {
+        source_to_target.set_expansion_order(expansion_order);
+        self.order = Some(expansion_order);
         self.source_to_target = Some(source_to_target);
         self
     }
