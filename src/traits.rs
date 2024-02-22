@@ -1,6 +1,6 @@
 use crate::other::EvalType;
 
-// Implemented over DataTree
+// Implemented over
 pub trait SourceTranslation {
     fn p2m(&self);
     fn m2m(&self, level: usize);
