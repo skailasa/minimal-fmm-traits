@@ -109,11 +109,6 @@ where
         }
     }
 
-    pub fn mpi(mut self, comm: U) -> Self {
-        self.comm = Some(comm);
-        self
-    }
-
     pub fn tree(
         mut self,
         targets: &'builder [V],

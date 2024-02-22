@@ -111,7 +111,21 @@ where
         }
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T]) {}
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T]) {
+        match eval_type {
+            EvalType::Value => println!(
+                "evaluating potentials multinode rank; {:?} order {:?} with matrix of charges",
+                self.tree.comm.rank(),
+                self.m2l.expansion_order
+            ),
+            EvalType::ValueDeriv => println!(
+                "evaluating potentials and derivatives multinode rank: {:?} order {:?} with matrix of charges",
+                self.tree.comm.rank(),
+                self.m2l.expansion_order
+            ),
+        }
+
+    }
 }
 
 impl<'fmm, T> Fmm<T> for KiFmm<MultiNodeFmmTree<'fmm, T>, SourceToTargetDataSvd>

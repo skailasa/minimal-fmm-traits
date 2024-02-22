@@ -36,5 +36,6 @@ fn main() {
             .unwrap();
 
         fmm.evaluate_vec(EvalType::Value, &charges);
+        fmm.evaluate_mat(EvalType::Value, &charges);
     }
 }
