@@ -10,7 +10,6 @@ fn main() {
     let sources = [0f64];
     let charges = [0f64];
     let expansion_order = 10;
-    // let n_crit = Some(150);
     let n_crit = None;
 
     // Single node fmm

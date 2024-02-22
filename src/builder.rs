@@ -8,12 +8,12 @@ use crate::{
 };
 
 #[derive(Default)]
-pub struct KiFmmBuilderSingleNode<'tree, T, U>
+pub struct KiFmmBuilderSingleNode<'builder, T, U>
 where
     T: SourceToTargetData,
     U: Float,
 {
-    tree: Option<SingleNodeFmmTree<'tree, U>>,
+    tree: Option<SingleNodeFmmTree<'builder, U>>,
     source_to_target: Option<T>,
     order: Option<usize>,
     max_depth: Option<usize>,
