@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 num-traits = "0.2.18"
+mpi = { version = "0.7.0", features = ["user-operations", "derive"] }

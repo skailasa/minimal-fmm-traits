@@ -1,26 +1,40 @@
-use minimal_fmm_traits::{traits::Fmm, types::{EvalType, KiFmmBuilderMultiNode, KiFmmBuilderSingleNode, SourceToTargetDataFft, SourceToTargetDataSvd}};
+use minimal_fmm_traits::{
+    traits::Fmm,
+    types::{
+        EvalType, KiFmmBuilderMultiNode, KiFmmBuilderSingleNode, SourceToTargetDataFft,
+        SourceToTargetDataSvd,
+    },
+};
 
+fn main() {
+    let targets = [0f64];
+    let sources = [0f64];
+    let charges = [0f64];
+    let order = 10;
+    let n_crit = 150; // Should get away without specifying, just choose a default decent value
 
-fn main () {
+    // Single node fmm
+    {
+        let fmm = KiFmmBuilderSingleNode::new()
+            .tree(&targets, &sources, n_crit)
+            .parameters(order, SourceToTargetDataSvd::new())
+            .build()
+            .unwrap();
 
-    let targets = [0.];
-    let sources = [0.];
-    let charges = [0.];
-    let order = 5;
+        fmm.evaluate_vec(EvalType::Value, &charges);
+    }
 
-    let fmm = KiFmmBuilderSingleNode::new()
-        .tree(&targets, &sources, &charges)
-        .expansions(order, SourceToTargetDataSvd::new())
-        .build()
-        .unwrap();
+    // Multi node fmm
+    {
+        let universe = mpi::initialize().unwrap();
+        let world = universe.world();
 
-    fmm.evaluate(EvalType::ValueDeriv);
+        let fmm = KiFmmBuilderMultiNode::new()
+            .tree(&targets, &sources, n_crit, world)
+            .parameters(order, SourceToTargetDataFft::new())
+            .build()
+            .unwrap();
 
-    let fmm = KiFmmBuilderMultiNode::new()
-        .tree(&targets, &sources, &charges)
-        .expansions(order, SourceToTargetDataFft::new())
-        .build()
-        .unwrap();
-
-    fmm.evaluate(EvalType::Value);
+        fmm.evaluate_vec(EvalType::Value, &charges);
+    }
 }

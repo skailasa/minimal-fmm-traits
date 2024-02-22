@@ -20,26 +20,29 @@ pub trait SourceToTargetHomogenous {
 }
 
 // Implemented over Concrete FMM
-pub trait Fmm
+pub trait Fmm<U>
 where
-    Self: SourceTranslation + TargetTranslation + SourceToTargetHomogenous
+    Self: SourceTranslation + TargetTranslation + SourceToTargetHomogenous,
+    U: num_traits::Float,
 {
-    fn evaluate(&self, eval_type: EvalType);
+    fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[U]);
+
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[U]);
 }
 
 // Implemented over concrete tree
-pub trait Tree {
-}
+pub trait Tree {}
 
 // Implemented over concrete kernel
 pub trait ScaleInvariantKernel
 where
-    Self: Kernel
+    Self: Kernel,
 {
-
     fn scale(&self);
 }
 
 pub trait Kernel {}
 
-pub trait SourceToTargetData {}
+pub trait SourceToTargetData {
+    fn set_order(&mut self, order: usize) {}
+}
