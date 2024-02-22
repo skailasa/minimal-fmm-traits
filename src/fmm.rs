@@ -124,7 +124,6 @@ where
                 self.m2l.expansion_order
             ),
         }
-
     }
 }
 

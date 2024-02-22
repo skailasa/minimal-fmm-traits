@@ -14,12 +14,16 @@ impl SourceToTargetData for SourceToTargetDataSvd {
     fn set_expansion_order(&mut self, expansion_order: usize) {
         self.expansion_order = expansion_order
     }
+
+    fn calculate_m2l_operators(&mut self, expansion_order: usize, depth: usize) {}
 }
 
 impl SourceToTargetData for SourceToTargetDataFft {
     fn set_expansion_order(&mut self, expansion_order: usize) {
         self.expansion_order = expansion_order
     }
+
+    fn calculate_m2l_operators(&mut self, expansion_order: usize, depth: usize) {}
 }
 
 impl SourceToTargetDataFft {

@@ -16,6 +16,7 @@ where
     tree: Option<SingleNodeFmmTree<'tree, U>>,
     source_to_target: Option<T>,
     order: Option<usize>,
+    max_depth: Option<usize>,
 }
 
 #[derive(Default)]
@@ -29,6 +30,7 @@ where
     source_to_target: Option<T>,
     order: Option<usize>,
     comm: Option<U>,
+    max_depth: Option<usize>,
 }
 
 impl<'builder, T, U> KiFmmBuilderSingleNode<'builder, T, U>
@@ -42,6 +44,7 @@ where
             tree: None,
             source_to_target: None,
             order: None,
+            max_depth: None,
         }
     }
 
@@ -52,8 +55,15 @@ where
         n_crit: Option<usize>,
     ) -> Self {
         if n_crit.is_some() {
-            let source_tree = SingleNodeTree { points: sources };
-            let target_tree = SingleNodeTree { points: targets };
+            let calculated_depth = 5;
+            let source_tree = SingleNodeTree {
+                points: sources,
+                depth: calculated_depth,
+            };
+            let target_tree = SingleNodeTree {
+                points: targets,
+                depth: calculated_depth,
+            };
             let fmm_tree = SingleNodeFmmTree {
                 source_tree,
                 target_tree,
@@ -62,22 +72,40 @@ where
             self
         } else {
             // Determine n crit from data
-            let source_tree = SingleNodeTree { points: sources };
-            let target_tree = SingleNodeTree { points: targets };
+            let calculated_depth = 5;
+            let source_tree = SingleNodeTree {
+                points: sources,
+                depth: calculated_depth,
+            };
+            let target_tree = SingleNodeTree {
+                points: targets,
+                depth: calculated_depth,
+            };
+            let max_depth = source_tree.depth.max(target_tree.depth);
             let fmm_tree = SingleNodeFmmTree {
                 source_tree,
                 target_tree,
             };
             self.tree = Some(fmm_tree);
+            self.max_depth = Some(max_depth);
             self
         }
     }
 
-    pub fn parameters(mut self, expansion_order: usize, mut source_to_target: T) -> Self {
-        source_to_target.set_expansion_order(expansion_order);
-        self.order = Some(expansion_order);
-        self.source_to_target = Some(source_to_target);
-        self
+    pub fn parameters(
+        mut self,
+        expansion_order: usize,
+        mut source_to_target: T,
+    ) -> Result<Self, String> {
+        if self.tree.is_none() {
+            Err("Must build tree before specifying FMM parameters".to_string())
+        } else {
+            source_to_target.set_expansion_order(expansion_order);
+            source_to_target.calculate_m2l_operators(expansion_order, self.max_depth.unwrap());
+            self.order = Some(expansion_order);
+            self.source_to_target = Some(source_to_target);
+            Ok(self)
+        }
     }
 
     // Finalize and build the KiFmm
@@ -106,6 +134,7 @@ where
             source_to_target: None,
             comm: None,
             order: None,
+            max_depth: None,
         }
     }
 
@@ -117,9 +146,16 @@ where
         comm: U,
     ) -> Self {
         if n_crit.is_some() {
-            let source_tree = MultiNodeTree { points: sources };
-            let target_tree = MultiNodeTree { points: targets };
-
+            let depth = 4;
+            let source_tree = MultiNodeTree {
+                points: sources,
+                depth,
+            };
+            let target_tree = MultiNodeTree {
+                points: targets,
+                depth,
+            };
+            let max_depth = source_tree.depth.max(target_tree.depth);
             let comm = comm.duplicate();
             let fmm_tree = MultiNodeFmmTree {
                 comm,
@@ -130,9 +166,17 @@ where
             self
         } else {
             // Determine n crit from data
-            let source_tree = MultiNodeTree { points: sources };
-            let target_tree = MultiNodeTree { points: targets };
+            let depth = 4;
+            let source_tree = MultiNodeTree {
+                points: sources,
+                depth,
+            };
+            let target_tree = MultiNodeTree {
+                points: targets,
+                depth,
+            };
 
+            let max_depth = source_tree.depth.max(target_tree.depth);
             let comm = comm.duplicate();
             let fmm_tree = MultiNodeFmmTree {
                 comm,
@@ -140,15 +184,25 @@ where
                 target_tree,
             };
             self.tree = Some(fmm_tree);
+            self.max_depth = Some(max_depth);
             self
         }
     }
 
-    pub fn parameters(mut self, expansion_order: usize, mut source_to_target: T) -> Self {
-        source_to_target.set_expansion_order(expansion_order);
-        self.order = Some(expansion_order);
-        self.source_to_target = Some(source_to_target);
-        self
+    pub fn parameters(
+        mut self,
+        expansion_order: usize,
+        mut source_to_target: T,
+    ) -> Result<Self, String> {
+        if self.tree.is_none() {
+            Err("Must build tree before specifying FMM parameters".to_string())
+        } else {
+            source_to_target.set_expansion_order(expansion_order);
+            source_to_target.calculate_m2l_operators(expansion_order, self.max_depth.unwrap());
+            self.order = Some(expansion_order);
+            self.source_to_target = Some(source_to_target);
+            Ok(self)
+        }
     }
 
     // Finalize and build the KiFmm

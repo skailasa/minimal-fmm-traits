@@ -5,10 +5,12 @@ use crate::traits::Tree;
 
 pub struct MultiNodeTree<'tree, U: Float> {
     pub points: &'tree [U],
+    pub depth: usize,
 }
 
 pub struct SingleNodeTree<'tree, U: Float> {
     pub points: &'tree [U],
+    pub depth: usize,
 }
 
 pub struct SingleNodeFmmTree<'fmm_tree, U: Float> {

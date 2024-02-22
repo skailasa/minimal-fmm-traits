@@ -45,4 +45,5 @@ pub trait Kernel {}
 
 pub trait SourceToTargetData {
     fn set_expansion_order(&mut self, expansion_order: usize);
+    fn calculate_m2l_operators(&mut self, expansion_order: usize, depth: usize);
 }
