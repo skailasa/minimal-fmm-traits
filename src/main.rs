@@ -16,7 +16,7 @@ fn main() {
     // Single node fmm
     {
         let fmm = KiFmmBuilderSingleNode::new()
-            .tree(&targets, &sources, n_crit)
+            .tree(&sources, &targets, n_crit)
             .parameters(expansion_order, SourceToTargetDataSvd::new())
             .unwrap()
             .build()
@@ -31,7 +31,7 @@ fn main() {
         let world = universe.world();
 
         let fmm = KiFmmBuilderMultiNode::new()
-            .tree(&targets, &sources, n_crit, world)
+            .tree(&sources, &targets, n_crit, world)
             .parameters(expansion_order, SourceToTargetDataFft::new())
             .unwrap()
             .build()

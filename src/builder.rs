@@ -50,8 +50,8 @@ where
 
     pub fn tree(
         mut self,
-        targets: &'builder [U],
         sources: &'builder [U],
+        targets: &'builder [U],
         n_crit: Option<usize>,
     ) -> Self {
         if n_crit.is_some() {
@@ -140,8 +140,8 @@ where
 
     pub fn tree(
         mut self,
-        targets: &'builder [V],
         sources: &'builder [V],
+        targets: &'builder [V],
         n_crit: Option<usize>,
         comm: U,
     ) -> Self {
@@ -163,6 +163,7 @@ where
                 target_tree,
             };
             self.tree = Some(fmm_tree);
+            self.max_depth = Some(max_depth);
             self
         } else {
             // Determine n crit from data
