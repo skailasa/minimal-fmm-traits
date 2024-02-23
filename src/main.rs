@@ -1,6 +1,7 @@
 use minimal_fmm_traits::{
     builder::{KiFmmBuilderMultiNode, KiFmmBuilderSingleNode},
     field_translations::{SourceToTargetDataFft, SourceToTargetDataSvd},
+    kernel::LaplaceKernel,
     other::EvalType,
     traits::Fmm,
 };
@@ -17,7 +18,11 @@ fn main() {
     {
         let fmm = KiFmmBuilderSingleNode::new()
             .tree(&sources, &targets, n_crit)
-            .parameters(expansion_order, SourceToTargetDataSvd::new())
+            .parameters(
+                expansion_order,
+                SourceToTargetDataSvd::new(),
+                LaplaceKernel::new(),
+            )
             .unwrap()
             .build()
             .unwrap();
@@ -32,7 +37,11 @@ fn main() {
 
         let fmm = KiFmmBuilderMultiNode::new()
             .tree(&sources, &targets, n_crit, world)
-            .parameters(expansion_order, SourceToTargetDataFft::new())
+            .parameters(
+                expansion_order,
+                SourceToTargetDataFft::new(),
+                LaplaceKernel::new(),
+            )
             .unwrap()
             .build()
             .unwrap();

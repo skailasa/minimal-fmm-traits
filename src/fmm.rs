@@ -68,7 +68,7 @@ impl<T: Float> SourceToTargetHomogenous for KiFmm<MultiNodeFmmTree<'_, T>, Sourc
 impl<'fmm, T, U: SourceToTargetData> Fmm<T> for KiFmm<SingleNodeFmmTree<'fmm, T>, U>
 where
     T: Float,
-    Self: SourceToTargetHomogenous
+    Self: SourceToTargetHomogenous,
 {
     fn evaluate_vec(&self, eval_type: EvalType, charges: &[T], result: &mut [T]) {
         match eval_type {
@@ -83,7 +83,7 @@ impl<'fmm, T, U> Fmm<T> for KiFmm<MultiNodeFmmTree<'fmm, T>, U>
 where
     T: Float,
     U: SourceToTargetData,
-    Self: SourceToTargetHomogenous
+    Self: SourceToTargetHomogenous,
 {
     fn evaluate_vec(&self, eval_type: EvalType, charges: &[T], result: &mut [T]) {
         match eval_type {

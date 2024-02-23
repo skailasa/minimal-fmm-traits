@@ -3,46 +3,53 @@ use num_traits::Float;
 
 use crate::{
     fmm::KiFmm,
-    traits::SourceToTargetData,
+    kernel,
+    traits::{Kernel, SourceToTargetData},
     tree::{MultiNodeFmmTree, MultiNodeTree, SingleNodeFmmTree, SingleNodeTree},
 };
 
 #[derive(Default)]
-pub struct KiFmmBuilderSingleNode<'builder, T, U>
+pub struct KiFmmBuilderSingleNode<'builder, T, U, V>
 where
     T: SourceToTargetData,
     U: Float,
+    V: Kernel,
 {
     tree: Option<SingleNodeFmmTree<'builder, U>>,
     source_to_target: Option<T>,
+    kernel: Option<V>,
     order: Option<usize>,
     max_depth: Option<usize>,
 }
 
 #[derive(Default)]
-pub struct KiFmmBuilderMultiNode<'builder, T, U, V>
+pub struct KiFmmBuilderMultiNode<'builder, T, U, V, W>
 where
     T: SourceToTargetData,
     U: Communicator,
     V: Float,
+    W: Kernel,
 {
     tree: Option<MultiNodeFmmTree<'builder, V>>,
     source_to_target: Option<T>,
     order: Option<usize>,
     comm: Option<U>,
     max_depth: Option<usize>,
+    kernel: Option<W>,
 }
 
-impl<'builder, T, U> KiFmmBuilderSingleNode<'builder, T, U>
+impl<'builder, T, U, V> KiFmmBuilderSingleNode<'builder, T, U, V>
 where
     T: SourceToTargetData,
     U: Float,
+    V: Kernel,
 {
     // Start building with mandatory parameters
     pub fn new() -> Self {
         KiFmmBuilderSingleNode {
             tree: None,
             source_to_target: None,
+            kernel: None,
             order: None,
             max_depth: None,
         }
@@ -96,6 +103,7 @@ where
         mut self,
         expansion_order: usize,
         mut source_to_target: T,
+        kernel: V,
     ) -> Result<Self, String> {
         if self.tree.is_none() {
             Err("Must build tree before specifying FMM parameters".to_string())
@@ -104,6 +112,7 @@ where
             source_to_target.calculate_m2l_operators(expansion_order, self.max_depth.unwrap());
             self.order = Some(expansion_order);
             self.source_to_target = Some(source_to_target);
+            self.kernel = Some(kernel);
             Ok(self)
         }
     }
@@ -121,11 +130,12 @@ where
     }
 }
 
-impl<'builder, T, U, V> KiFmmBuilderMultiNode<'builder, T, U, V>
+impl<'builder, T, U, V, W> KiFmmBuilderMultiNode<'builder, T, U, V, W>
 where
     T: SourceToTargetData,
     U: Communicator,
     V: Float,
+    W: Kernel,
 {
     // Start building with mandatory parameters
     pub fn new() -> Self {
@@ -135,6 +145,7 @@ where
             comm: None,
             order: None,
             max_depth: None,
+            kernel: None,
         }
     }
 
@@ -194,6 +205,7 @@ where
         mut self,
         expansion_order: usize,
         mut source_to_target: T,
+        kernel: W,
     ) -> Result<Self, String> {
         if self.tree.is_none() {
             Err("Must build tree before specifying FMM parameters".to_string())
@@ -202,6 +214,7 @@ where
             source_to_target.calculate_m2l_operators(expansion_order, self.max_depth.unwrap());
             self.order = Some(expansion_order);
             self.source_to_target = Some(source_to_target);
+            self.kernel = Some(kernel);
             Ok(self)
         }
     }

@@ -7,3 +7,9 @@ impl Kernel for LaplaceKernel {}
 impl ScaleInvariantKernel for LaplaceKernel {
     fn scale(&self) {}
 }
+
+impl LaplaceKernel {
+    pub fn new() -> Self {
+        LaplaceKernel {}
+    }
+}
