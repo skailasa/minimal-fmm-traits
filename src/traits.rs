@@ -13,16 +13,25 @@ pub trait TargetTranslation {
     fn p2p(&self, level: usize);
 }
 
-pub trait SourceToTargetHomogenous {
+pub trait SourceToTarget {
+
     fn m2l(&self, level: usize);
     fn p2l(&self, level: usize);
+
+}
+
+pub trait SourceToTargetHomogenousScaleInvariant
+where
+    Self: SourceToTarget
+{
     fn scale(&self);
 }
+
 
 // Implemented over Concrete FMM
 pub trait Fmm<T>
 where
-    Self: SourceTranslation + TargetTranslation + SourceToTargetHomogenous,
+    Self: SourceTranslation + TargetTranslation + SourceToTarget,
     T: num_traits::Float,
 {
     fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[T], result: &mut [T]);
