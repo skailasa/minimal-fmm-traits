@@ -14,19 +14,16 @@ pub trait TargetTranslation {
 }
 
 pub trait SourceToTarget {
-
     fn m2l(&self, level: usize);
     fn p2l(&self, level: usize);
-
 }
 
 pub trait SourceToTargetHomogenousScaleInvariant
 where
-    Self: SourceToTarget
+    Self: SourceToTarget,
 {
     fn scale(&self);
 }
-
 
 // Implemented over Concrete FMM
 pub trait Fmm<T>
@@ -43,7 +40,7 @@ where
 pub trait Tree {}
 
 // Implemented over concrete kernel
-pub trait ScaleInvariantKernel
+pub trait ScaleInvariantHomogenousKernel
 where
     Self: Kernel,
 {

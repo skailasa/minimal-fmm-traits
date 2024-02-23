@@ -1,10 +1,10 @@
-use crate::traits::{Kernel, ScaleInvariantKernel};
+use crate::traits::{Kernel, ScaleInvariantHomogenousKernel};
 
 pub struct LaplaceKernel {}
 
 impl Kernel for LaplaceKernel {}
 
-impl ScaleInvariantKernel for LaplaceKernel {
+impl ScaleInvariantHomogenousKernel for LaplaceKernel {
     fn scale(&self) {}
 }
 
