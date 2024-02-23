@@ -4,7 +4,7 @@ use num_traits::Float;
 use crate::{
     fmm::KiFmm,
     kernel,
-    traits::{Kernel, SourceToTargetData},
+    traits::{Kernel, ScaleInvariantKernel, SourceToTargetData},
     tree::{MultiNodeFmmTree, MultiNodeTree, SingleNodeFmmTree, SingleNodeTree},
 };
 
@@ -28,7 +28,7 @@ where
     T: SourceToTargetData,
     U: Communicator,
     V: Float,
-    W: Kernel,
+    W: Kernel + ScaleInvariantKernel,
 {
     tree: Option<MultiNodeFmmTree<'builder, V>>,
     source_to_target: Option<T>,
@@ -135,7 +135,7 @@ where
     T: SourceToTargetData,
     U: Communicator,
     V: Float,
-    W: Kernel,
+    W: Kernel + ScaleInvariantKernel,
 {
     // Start building with mandatory parameters
     pub fn new() -> Self {
@@ -211,9 +211,10 @@ where
             Err("Must build tree before specifying FMM parameters".to_string())
         } else {
             source_to_target.set_expansion_order(expansion_order);
+             // This should be done in build step, so this can be passed around cheaply
             source_to_target.calculate_m2l_operators(expansion_order, self.max_depth.unwrap());
-            self.order = Some(expansion_order);
             self.source_to_target = Some(source_to_target);
+            self.order = Some(expansion_order);
             self.kernel = Some(kernel);
             Ok(self)
         }
