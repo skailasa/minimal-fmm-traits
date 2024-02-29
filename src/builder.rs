@@ -48,7 +48,7 @@ impl<'builder, T, U, V> KiFmmBuilderSingleNode<'builder, T, U, V>
 where
     T: SourceToTargetData<V>,
     U: Float,
-    V: Kernel,
+    V: Kernel + Clone,
 {
     // Start building with mandatory parameters
     pub fn new() -> Self {
@@ -135,9 +135,18 @@ where
         {
             Err("Must Build tree and specify FMM parameters".to_string())
         } else {
+
+            // Set the expansion order
             source_to_target.set_expansion_order(self.expansion_order.unwrap());
+
+            // Set the associated kernel
+            let kernel = self.kernel.as_ref().unwrap().clone();
+            source_to_target.set_kernel(kernel);
+
+            // Compute the field translation operators
             source_to_target
                 .set_operator_data(self.expansion_order.unwrap(), &self.source_domain.unwrap());
+
             self.source_to_target = Some(source_to_target);
             Ok(self)
         }
@@ -151,7 +160,7 @@ where
         } else {
             Ok(KiFmm {
                 tree: self.tree.unwrap(),
-                m2l: self.source_to_target.unwrap(),
+                field_translation_data: self.source_to_target.unwrap(),
                 kernel: self.kernel.unwrap(),
                 expansion_order: self.expansion_order.unwrap(),
                 ncoeffs: self.ncoeffs.unwrap(),
@@ -165,7 +174,7 @@ where
     T: SourceToTargetData<W>,
     U: Communicator,
     V: Float,
-    W: Kernel + ScaleInvariantHomogenousKernel,
+    W: Kernel + ScaleInvariantHomogenousKernel + Clone,
 {
     // Start building with mandatory parameters
     pub fn new() -> Self {
@@ -261,9 +270,17 @@ where
         if self.expansion_order.is_none() || self.kernel.is_none() || self.ncoeffs.is_none() {
             Err("Must Build tree and specify FMM parameters".to_string())
         } else {
+            // Set the expansion order
             source_to_target.set_expansion_order(self.expansion_order.unwrap());
+
+            // Set the associated kernel
+            let kernel = self.kernel.as_ref().unwrap().clone();
+            source_to_target.set_kernel(kernel);
+
+            // Compute the field translation operators
             source_to_target
                 .set_operator_data(self.expansion_order.unwrap(), &self.source_domain.unwrap());
+
             self.source_to_target = Some(source_to_target);
             Ok(self)
         }
@@ -277,7 +294,7 @@ where
         } else {
             Ok(KiFmm {
                 tree: self.tree.unwrap(),
-                m2l: self.source_to_target.unwrap(),
+                field_translation_data: self.source_to_target.unwrap(),
                 kernel: self.kernel.unwrap(),
                 expansion_order: self.expansion_order.unwrap(),
                 ncoeffs: self.ncoeffs.unwrap(),

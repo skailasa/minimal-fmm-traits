@@ -1,35 +1,49 @@
-
-
 use crate::{
-    domain::{Domain3D},
+    domain::Domain3D,
     operator_data::{FftOperatorData, SvdOperatorData},
-    traits::{Kernel, SourceToTargetData},
+    traits::{ScaleInvariantHomogenousKernel, SourceToTargetData},
 };
 
+pub struct TransferVector {}
+
 #[derive(Default)]
-pub struct SourceToTargetDataSvd<T>
+pub struct SourceToTargetDataSvd<T, U>
 where
     T: num_traits::Float,
+    U: ScaleInvariantHomogenousKernel + Default,
 {
-    pub expansion_order: usize,
-    pub threshold: T,
     pub operator_data: SvdOperatorData,
+    pub transfer_vectors: Vec<TransferVector>,
+    expansion_order: usize,
+    kernel: U,
+    threshold: T,
 }
 
 #[derive(Default)]
-pub struct SourceToTargetDataFft {
-    pub expansion_order: usize,
+pub struct SourceToTargetDataFft<T>
+where
+    T: ScaleInvariantHomogenousKernel + Default,
+{
     pub operator_data: FftOperatorData,
+    pub transfer_vectors: Vec<TransferVector>,
+    pub surf_to_conv_map: Vec<usize>,
+    pub conv_to_surf_map: Vec<usize>,
+    expansion_order: usize, // expansion order is also private as it's only used in the computation of field translation data
+    kernel: T, // kernel is private, as it's only used in the computation of field translation data
 }
 
-impl<T, U> SourceToTargetData<U> for SourceToTargetDataSvd<T>
+impl<T, U> SourceToTargetData<U> for SourceToTargetDataSvd<T, U>
 where
     T: num_traits::Float,
-    U: Kernel,
+    U: ScaleInvariantHomogenousKernel + Default,
 {
     type OperatorData = SvdOperatorData;
     fn set_expansion_order(&mut self, expansion_order: usize) {
         self.expansion_order = expansion_order
+    }
+
+    fn set_kernel(&mut self, kernel: U) {
+        self.kernel = kernel
     }
 
     fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Domain3D) {
@@ -37,9 +51,9 @@ where
     }
 }
 
-impl<T> SourceToTargetData<T> for SourceToTargetDataFft
+impl<T> SourceToTargetData<T> for SourceToTargetDataFft<T>
 where
-    T: Kernel,
+    T: ScaleInvariantHomogenousKernel + Default,
 {
     type OperatorData = SvdOperatorData;
 
@@ -47,22 +61,30 @@ where
         self.expansion_order = expansion_order
     }
 
+    fn set_kernel(&mut self, kernel: T) {
+        self.kernel = kernel
+    }
+
     fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Domain3D) {
         self.operator_data = FftOperatorData {}
     }
 }
 
-impl SourceToTargetDataFft {
+impl<T> SourceToTargetDataFft<T>
+where
+    T: ScaleInvariantHomogenousKernel + Default,
+{
     pub fn new() -> Self {
         SourceToTargetDataFft::default()
     }
 }
 
-impl<T> SourceToTargetDataSvd<T>
+impl<T, U> SourceToTargetDataSvd<T, U>
 where
     T: num_traits::Float + Default,
+    U: ScaleInvariantHomogenousKernel + Default,
 {
     pub fn new(_threshold: T) -> Self {
-        SourceToTargetDataSvd::<T>::default()
+        SourceToTargetDataSvd::<T, U>::default()
     }
 }

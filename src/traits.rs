@@ -56,7 +56,11 @@ where
     fn scale(&self);
 }
 
-pub trait Kernel {}
+pub trait Kernel {
+    fn evaluate_st(&self);
+
+    fn evaluate_mt(&self);
+}
 
 /// template for each kernel as will need to re-implement the data structure
 /// for storing operator data (e.g. helmholtz will have complex float types)
@@ -70,4 +74,5 @@ where
 
     fn set_expansion_order(&mut self, expansion_order: usize);
     fn set_operator_data(&mut self, expansion_order: usize, domain: &Domain3D);
+    fn set_kernel(&mut self, kernel: T);
 }
