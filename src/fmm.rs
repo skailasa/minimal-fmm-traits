@@ -2,7 +2,7 @@ use crate::{
     field_translations::{SourceToTargetDataFft, SourceToTargetDataSvd},
     other::EvalType,
     traits::{
-        Fmm, Kernel, ScaleInvariantHomogenousKernel, SourceToTarget, SourceToTargetData,
+        Fmm, FmmTree, Kernel, ScaleInvariantHomogenousKernel, SourceToTarget, SourceToTargetData,
         SourceToTargetHomogenousScaleInvariant, SourceTranslation, TargetTranslation, Tree,
     },
     tree::{MultiNodeFmmTree, SingleNodeFmmTree},
@@ -12,7 +12,7 @@ use num_traits::Float;
 use mpi::topology::Communicator;
 
 // Contains tree + kernel + metadata required to compute FMM
-pub struct KiFmm<T: Tree, U: SourceToTargetData<V>, V: Kernel> {
+pub struct KiFmm<T: FmmTree, U: SourceToTargetData<V>, V: Kernel> {
     pub tree: T,
     pub field_translation_data: U,
     pub kernel: V,
