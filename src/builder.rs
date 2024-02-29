@@ -4,7 +4,7 @@ use num_traits::Float;
 use crate::{
     domain::Domain3D,
     fmm::{ncoeffs, KiFmm},
-    traits::{Kernel, ScaleInvariantHomogenousKernel, SourceToTargetData},
+    traits::{Kernel, ScaleInvariantHomogenousKernel, SourceToTargetData, Tree},
     tree::{MultiNodeFmmTree, MultiNodeTree, SingleNodeFmmTree, SingleNodeTree},
 };
 
@@ -28,7 +28,7 @@ where
 #[derive(Default)]
 pub struct KiFmmBuilderMultiNode<'builder, T, U, V, W>
 where
-    T: SourceToTargetData<W>,
+    T: SourceToTargetData<W, Domain = Domain3D>,
     U: Communicator,
     V: Float,
     W: Kernel + ScaleInvariantHomogenousKernel,
@@ -46,7 +46,7 @@ where
 
 impl<'builder, T, U, V> KiFmmBuilderSingleNode<'builder, T, U, V>
 where
-    T: SourceToTargetData<V>,
+    T: SourceToTargetData<V, Domain = Domain3D>,
     U: Float,
     V: Kernel + Clone,
 {
@@ -82,8 +82,8 @@ where
                 depth: calculated_depth,
                 domain: Domain3D {},
             };
-            self.source_domain = Some(source_tree.domain);
-            self.target_domain = Some(target_tree.domain);
+            self.source_domain = Some(source_tree.get_domain());
+            self.target_domain = Some(target_tree.get_domain());
             let fmm_tree = SingleNodeFmmTree {
                 source_tree,
                 target_tree,
@@ -104,8 +104,8 @@ where
                 domain: Domain3D {},
             };
             let max_depth = source_tree.depth.max(target_tree.depth);
-            self.source_domain = Some(source_tree.domain);
-            self.target_domain = Some(target_tree.domain);
+            self.source_domain = Some(source_tree.get_domain());
+            self.target_domain = Some(target_tree.get_domain());
             let fmm_tree = SingleNodeFmmTree {
                 source_tree,
                 target_tree,
@@ -135,7 +135,6 @@ where
         {
             Err("Must Build tree and specify FMM parameters".to_string())
         } else {
-
             // Set the expansion order
             source_to_target.set_expansion_order(self.expansion_order.unwrap());
 
@@ -171,7 +170,7 @@ where
 
 impl<'builder, T, U, V, W> KiFmmBuilderMultiNode<'builder, T, U, V, W>
 where
-    T: SourceToTargetData<W>,
+    T: SourceToTargetData<W, Domain = Domain3D>,
     U: Communicator,
     V: Float,
     W: Kernel + ScaleInvariantHomogenousKernel + Clone,
@@ -212,8 +211,8 @@ where
             };
             let max_depth = source_tree.depth.max(target_tree.depth);
             let comm = comm.duplicate();
-            self.source_domain = Some(source_tree.domain);
-            self.target_domain = Some(target_tree.domain);
+            self.source_domain = Some(source_tree.get_domain());
+            self.target_domain = Some(target_tree.get_domain());
 
             let fmm_tree = MultiNodeFmmTree {
                 comm,
@@ -240,8 +239,8 @@ where
 
             let max_depth = source_tree.depth.max(target_tree.depth);
             let comm = comm.duplicate();
-            self.source_domain = Some(source_tree.domain);
-            self.target_domain = Some(target_tree.domain);
+            self.source_domain = Some(source_tree.get_domain());
+            self.target_domain = Some(target_tree.get_domain());
 
             let fmm_tree = MultiNodeFmmTree {
                 comm,

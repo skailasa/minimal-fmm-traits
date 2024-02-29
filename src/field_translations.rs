@@ -38,6 +38,8 @@ where
     U: ScaleInvariantHomogenousKernel + Default,
 {
     type OperatorData = SvdOperatorData;
+    type Domain = Domain3D;
+
     fn set_expansion_order(&mut self, expansion_order: usize) {
         self.expansion_order = expansion_order
     }
@@ -46,7 +48,7 @@ where
         self.kernel = kernel
     }
 
-    fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Domain3D) {
+    fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Self::Domain) {
         self.operator_data = SvdOperatorData {}
     }
 }
@@ -56,6 +58,7 @@ where
     T: ScaleInvariantHomogenousKernel + Default,
 {
     type OperatorData = SvdOperatorData;
+    type Domain = Domain3D;
 
     fn set_expansion_order(&mut self, expansion_order: usize) {
         self.expansion_order = expansion_order
@@ -65,7 +68,7 @@ where
         self.kernel = kernel
     }
 
-    fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Domain3D) {
+    fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Self::Domain) {
         self.operator_data = FftOperatorData {}
     }
 }

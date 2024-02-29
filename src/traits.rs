@@ -1,4 +1,4 @@
-use crate::{domain::Domain3D, other::EvalType};
+use crate::other::EvalType;
 
 /// Implemented over type that contains metadata to perform FMM as well as a reference to the
 /// source and target trees
@@ -48,6 +48,14 @@ pub trait Tree {
     fn get_domain(&self) -> Self::Domain;
 }
 
+pub trait FmmTree {
+    type Tree: Tree;
+
+    fn get_source_tree(&self) -> &Self::Tree;
+
+    fn get_target_tree(&self) -> &Self::Tree;
+}
+
 // Implemented over concrete kernel
 pub trait ScaleInvariantHomogenousKernel
 where
@@ -71,8 +79,9 @@ where
     T: Kernel,
 {
     type OperatorData;
+    type Domain;
 
     fn set_expansion_order(&mut self, expansion_order: usize);
-    fn set_operator_data(&mut self, expansion_order: usize, domain: &Domain3D);
+    fn set_operator_data(&mut self, expansion_order: usize, domain: &Self::Domain);
     fn set_kernel(&mut self, kernel: T);
 }
