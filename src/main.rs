@@ -2,6 +2,7 @@ use minimal_fmm_traits::{
     builder::{KiFmmBuilderMultiNode, KiFmmBuilderSingleNode},
     field_translations::{SourceToTargetDataFft, SourceToTargetDataSvd},
     kernel::LaplaceKernel,
+    operator_data::FftOperatorData,
     other::EvalType,
     traits::Fmm,
 };
@@ -19,11 +20,9 @@ fn main() {
     {
         let fmm = KiFmmBuilderSingleNode::new()
             .tree(&sources, &targets, n_crit)
-            .parameters(
-                expansion_order,
-                SourceToTargetDataSvd::new(threshold),
-                LaplaceKernel::new(),
-            )
+            .parameters(expansion_order, LaplaceKernel::new())
+            .unwrap()
+            .field_translation(SourceToTargetDataSvd::new(threshold))
             .unwrap()
             .build()
             .unwrap();
@@ -41,11 +40,9 @@ fn main() {
         // TODO: expect row major for coordinate data
         let fmm = KiFmmBuilderMultiNode::new()
             .tree(&sources, &targets, n_crit, world)
-            .parameters(
-                expansion_order,
-                SourceToTargetDataFft::new(),
-                LaplaceKernel::new(),
-            )
+            .parameters(expansion_order, LaplaceKernel::new())
+            .unwrap()
+            .field_translation(SourceToTargetDataFft::new())
             .unwrap()
             .build()
             .unwrap();

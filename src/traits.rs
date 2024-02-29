@@ -1,4 +1,4 @@
-use crate::other::EvalType;
+use crate::{domain::Domain3D, other::EvalType};
 
 // Implemented over
 pub trait SourceTranslation {
@@ -26,15 +26,19 @@ where
 }
 
 // Implemented over Concrete FMM
-pub trait Fmm
-{
+pub trait Fmm {
     type T: num_traits::Float;
     fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[Self::T], result: &mut [Self::T]);
     fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[Self::T], result: &mut [Self::T]);
+    fn get_expansion_order(&self) -> usize;
+    fn get_ncoeffs(&self) -> usize;
 }
 
 // Implemented over concrete tree
-pub trait Tree {}
+pub trait Tree {
+    type Domain;
+    fn get_domain(&self) -> Self::Domain;
+}
 
 // Implemented over concrete kernel
 pub trait ScaleInvariantHomogenousKernel
@@ -46,7 +50,15 @@ where
 
 pub trait Kernel {}
 
-pub trait SourceToTargetData {
+
+/// template for each kernel as will need to re-implement the data structure
+// for storing operator data (e.g. helmholtz will have complex float types)
+pub trait SourceToTargetData<T>
+where
+    T: Kernel,
+{
+    type OperatorData;
+
     fn set_expansion_order(&mut self, expansion_order: usize);
-    fn set_metadata(&mut self, expansion_order: usize, depth: usize);
+    fn set_operator_data(&mut self, expansion_order: usize, domain: &Domain3D);
 }
