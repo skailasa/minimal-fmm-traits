@@ -27,40 +27,40 @@ pub fn ncoeffs(expansion_order: usize) -> usize {
 impl<T: Float, U: SourceToTargetData<V>, V: Kernel> SourceTranslation
     for KiFmm<SingleNodeFmmTree<'_, T>, U, V>
 {
-    fn m2m(&self, level: usize) {}
+    fn m2m(&self, _level: usize) {}
     fn p2m(&self) {}
 }
 
 impl<T: Float, U: SourceToTargetData<V>, V: Kernel> SourceTranslation
     for KiFmm<MultiNodeFmmTree<'_, T>, U, V>
 {
-    fn m2m(&self, level: usize) {}
+    fn m2m(&self, _level: usize) {}
     fn p2m(&self) {}
 }
 
 impl<T: Float, U: SourceToTargetData<V>, V: Kernel> TargetTranslation
     for KiFmm<SingleNodeFmmTree<'_, T>, U, V>
 {
-    fn l2l(&self, level: usize) {}
-    fn m2p(&self, level: usize) {}
-    fn l2p(&self, level: usize) {}
-    fn p2p(&self, level: usize) {}
+    fn l2l(&self, _level: usize) {}
+    fn m2p(&self, _level: usize) {}
+    fn l2p(&self, _level: usize) {}
+    fn p2p(&self, _level: usize) {}
 }
 
 impl<T: Float, U: SourceToTargetData<V>, V: Kernel> TargetTranslation
     for KiFmm<MultiNodeFmmTree<'_, T>, U, V>
 {
-    fn l2l(&self, level: usize) {}
-    fn m2p(&self, level: usize) {}
-    fn l2p(&self, level: usize) {}
-    fn p2p(&self, level: usize) {}
+    fn l2l(&self, _level: usize) {}
+    fn m2p(&self, _level: usize) {}
+    fn l2p(&self, _level: usize) {}
+    fn p2p(&self, _level: usize) {}
 }
 
 impl<T: Float, U: Kernel> SourceToTarget
     for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataSvd<T>, U>
 {
-    fn m2l(&self, level: usize) {}
-    fn p2l(&self, level: usize) {}
+    fn m2l(&self, _level: usize) {}
+    fn p2l(&self, _level: usize) {}
 }
 
 impl<T: Float, U: Kernel> SourceToTargetHomogenousScaleInvariant
@@ -71,8 +71,8 @@ impl<T: Float, U: Kernel> SourceToTargetHomogenousScaleInvariant
 impl<T: Float, U: Kernel> SourceToTarget
     for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataFft, U>
 {
-    fn m2l(&self, level: usize) {}
-    fn p2l(&self, level: usize) {}
+    fn m2l(&self, _level: usize) {}
+    fn p2l(&self, _level: usize) {}
 }
 
 impl<T: Float, U: Kernel> SourceToTargetHomogenousScaleInvariant
@@ -84,8 +84,8 @@ impl<T: Float, U: Kernel> SourceToTargetHomogenousScaleInvariant
 impl<T: Float, U: Kernel> SourceToTarget
     for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataSvd<T>, U>
 {
-    fn m2l(&self, level: usize) {}
-    fn p2l(&self, level: usize) {}
+    fn m2l(&self, _level: usize) {}
+    fn p2l(&self, _level: usize) {}
 }
 
 impl<T: Float, U: Kernel> SourceToTargetHomogenousScaleInvariant
@@ -97,8 +97,8 @@ impl<T: Float, U: Kernel> SourceToTargetHomogenousScaleInvariant
 impl<T: Float, U: Kernel> SourceToTarget
     for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataFft, U>
 {
-    fn m2l(&self, level: usize) {}
-    fn p2l(&self, level: usize) {}
+    fn m2l(&self, _level: usize) {}
+    fn p2l(&self, _level: usize) {}
 }
 
 impl<T: Float, U: Kernel> SourceToTargetHomogenousScaleInvariant
@@ -116,7 +116,7 @@ where
 {
     type T = T;
 
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[Self::T], result: &mut [Self::T]) {
+    fn evaluate_vec(&self, eval_type: EvalType, _charges: &[Self::T], _result: &mut [Self::T]) {
         match eval_type {
             EvalType::Value => println!(
                 "evaluating potentials multinode rank; {:?} with vector of charges",
@@ -129,7 +129,7 @@ where
         }
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[Self::T], result: &mut [Self::T]) {
+    fn evaluate_mat(&self, eval_type: EvalType, _charges_mat: &[Self::T], _result: &mut [Self::T]) {
         match eval_type {
             EvalType::Value => println!(
                 "evaluating potentials multinode rank; {:?} with matrix of charges",
@@ -160,7 +160,7 @@ where
 {
     type T = T;
 
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[Self::T], result: &mut [Self::T]) {
+    fn evaluate_vec(&self, eval_type: EvalType, _charges: &[Self::T], _result: &mut [Self::T]) {
         match eval_type {
             EvalType::Value => {
                 println!("evaluating potentials single node with vector of charges",)
@@ -171,7 +171,7 @@ where
         }
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[Self::T], result: &mut [Self::T]) {
+    fn evaluate_mat(&self, eval_type: EvalType, _charges_mat: &[Self::T], _result: &mut [Self::T]) {
         match eval_type {
             EvalType::Value => {
                 println!("evaluating potentials single node with matrix of charges",)

@@ -2,7 +2,6 @@ use minimal_fmm_traits::{
     builder::{KiFmmBuilderMultiNode, KiFmmBuilderSingleNode},
     field_translations::{SourceToTargetDataFft, SourceToTargetDataSvd},
     kernel::LaplaceKernel,
-    operator_data::FftOperatorData,
     other::EvalType,
     traits::Fmm,
 };

@@ -1,11 +1,14 @@
 use crate::{domain::Domain3D, other::EvalType};
 
-// Implemented over
+/// Implemented over type that contains metadata to perform FMM as well as a reference to the
+/// source and target trees
 pub trait SourceTranslation {
     fn p2m(&self);
     fn m2m(&self, level: usize);
 }
 
+/// Implemented over type that contains metadata to perform FMM as well as a reference to the
+/// source and target trees
 pub trait TargetTranslation {
     fn l2l(&self, level: usize);
     fn m2p(&self, level: usize);
@@ -13,6 +16,8 @@ pub trait TargetTranslation {
     fn p2p(&self, level: usize);
 }
 
+/// Implemented over type that contains metadata to perform FMM as well as a reference to the
+/// source and target trees
 pub trait SourceToTarget {
     fn m2l(&self, level: usize);
     fn p2l(&self, level: usize);
@@ -25,7 +30,8 @@ where
     fn scale(&self);
 }
 
-// Implemented over Concrete FMM
+/// Implemented over Concrete FMM
+/// T is an associated type, as we're not re-implementing this for different floating point types.
 pub trait Fmm {
     type T: num_traits::Float;
     fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[Self::T], result: &mut [Self::T]);
@@ -34,7 +40,9 @@ pub trait Fmm {
     fn get_ncoeffs(&self) -> usize;
 }
 
-// Implemented over concrete tree
+/// Implemented over concrete tree
+/// Domain can be an associated type, as we're only implementing this on a specific type of tree
+/// associted with a given domain
 pub trait Tree {
     type Domain;
     fn get_domain(&self) -> Self::Domain;
@@ -50,9 +58,10 @@ where
 
 pub trait Kernel {}
 
-
 /// template for each kernel as will need to re-implement the data structure
-// for storing operator data (e.g. helmholtz will have complex float types)
+/// for storing operator data (e.g. helmholtz will have complex float types)
+/// operator data itself will only be associated with a given kernel so can be stored
+/// as an associated type
 pub trait SourceToTargetData<T>
 where
     T: Kernel,

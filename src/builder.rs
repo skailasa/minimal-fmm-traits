@@ -4,7 +4,7 @@ use num_traits::Float;
 use crate::{
     domain::Domain3D,
     fmm::{ncoeffs, KiFmm},
-    traits::{Kernel, ScaleInvariantHomogenousKernel, SourceToTargetData, Tree},
+    traits::{Kernel, ScaleInvariantHomogenousKernel, SourceToTargetData},
     tree::{MultiNodeFmmTree, MultiNodeTree, SingleNodeFmmTree, SingleNodeTree},
 };
 

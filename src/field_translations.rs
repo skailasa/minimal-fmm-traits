@@ -1,7 +1,7 @@
-use core::num;
+
 
 use crate::{
-    domain::{self, Domain3D},
+    domain::{Domain3D},
     operator_data::{FftOperatorData, SvdOperatorData},
     traits::{Kernel, SourceToTargetData},
 };
@@ -19,7 +19,7 @@ where
 #[derive(Default)]
 pub struct SourceToTargetDataFft {
     pub expansion_order: usize,
-    pub operator_data: FftOperatorData
+    pub operator_data: FftOperatorData,
 }
 
 impl<T, U> SourceToTargetData<U> for SourceToTargetDataSvd<T>
@@ -32,7 +32,7 @@ where
         self.expansion_order = expansion_order
     }
 
-    fn set_operator_data(&mut self, expansion_order: usize, domain: &Domain3D) {
+    fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Domain3D) {
         self.operator_data = SvdOperatorData {}
     }
 }
@@ -47,7 +47,7 @@ where
         self.expansion_order = expansion_order
     }
 
-    fn set_operator_data(&mut self, expansion_order: usize, domain: &Domain3D) {
+    fn set_operator_data(&mut self, _expansion_order: usize, _domain: &Domain3D) {
         self.operator_data = FftOperatorData {}
     }
 }
@@ -62,7 +62,7 @@ impl<T> SourceToTargetDataSvd<T>
 where
     T: num_traits::Float + Default,
 {
-    pub fn new(threshold: T) -> Self {
+    pub fn new(_threshold: T) -> Self {
         SourceToTargetDataSvd::<T>::default()
     }
 }
