@@ -12,6 +12,7 @@ fn main() {
     let mut result = [0f64];
     let charges = [0f64];
     let expansion_order = 10;
+    let threshold = 0.1;
     let n_crit = None;
 
     // Single node fmm
@@ -20,13 +21,15 @@ fn main() {
             .tree(&sources, &targets, n_crit)
             .parameters(
                 expansion_order,
-                SourceToTargetDataSvd::new(),
+                SourceToTargetDataSvd::new(threshold),
                 LaplaceKernel::new(),
             )
             .unwrap()
             .build()
             .unwrap();
 
+        // For the n_crit can select default value based on uniform distributions.
+        // then specify an FMM with a single parameter (order + threshold (for BLAS))
         fmm.evaluate_vec(EvalType::Value, &charges, &mut result);
     }
 
@@ -35,6 +38,7 @@ fn main() {
         let universe = mpi::initialize().unwrap();
         let world = universe.world();
 
+        // TODO: expect row major for coordinate data
         let fmm = KiFmmBuilderMultiNode::new()
             .tree(&sources, &targets, n_crit, world)
             .parameters(

@@ -109,7 +109,7 @@ where
             Err("Must build tree before specifying FMM parameters".to_string())
         } else {
             source_to_target.set_expansion_order(expansion_order);
-            source_to_target.calculate_m2l_operators(expansion_order, self.max_depth.unwrap());
+            source_to_target.set_metadata(expansion_order, self.max_depth.unwrap());
             self.order = Some(expansion_order);
             self.source_to_target = Some(source_to_target);
             self.kernel = Some(kernel);
@@ -212,7 +212,7 @@ where
         } else {
             source_to_target.set_expansion_order(expansion_order);
             // This should be done in build step, so this can be passed around cheaply
-            source_to_target.calculate_m2l_operators(expansion_order, self.max_depth.unwrap());
+            source_to_target.set_metadata(expansion_order, self.max_depth.unwrap());
             self.source_to_target = Some(source_to_target);
             self.order = Some(expansion_order);
             self.kernel = Some(kernel);

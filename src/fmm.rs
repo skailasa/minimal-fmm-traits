@@ -41,13 +41,13 @@ impl<T: Float, U: SourceToTargetData> TargetTranslation for KiFmm<MultiNodeFmmTr
     fn p2p(&self, level: usize) {}
 }
 
-impl<T: Float> SourceToTarget for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataSvd> {
+impl<T: Float> SourceToTarget for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataSvd<T>> {
     fn m2l(&self, level: usize) {}
     fn p2l(&self, level: usize) {}
 }
 
 impl<T: Float> SourceToTargetHomogenousScaleInvariant
-    for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataSvd>
+    for KiFmm<SingleNodeFmmTree<'_, T>, SourceToTargetDataSvd<T>>
 {
     fn scale(&self) {}
 }
@@ -62,13 +62,13 @@ impl<T: Float> SourceToTargetHomogenousScaleInvariant
     fn scale(&self) {}
 }
 
-impl<T: Float> SourceToTarget for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataSvd> {
+impl<T: Float> SourceToTarget for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataSvd<T>> {
     fn m2l(&self, level: usize) {}
     fn p2l(&self, level: usize) {}
 }
 
 impl<T: Float> SourceToTargetHomogenousScaleInvariant
-    for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataSvd>
+    for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataSvd<T>>
 {
     fn scale(&self) {}
 }
@@ -83,33 +83,15 @@ impl<T: Float> SourceToTargetHomogenousScaleInvariant
     fn scale(&self) {}
 }
 
-// impl<T: Float> SourceToTargetHomogenous for KiFmm<MultiNodeFmmTree<'_, T>, SourceToTargetDataFft> {
-//     fn m2l(&self, level: usize) {}
-//     fn p2l(&self, level: usize) {}
-//     fn scale(&self) {}
-// }
-
-// impl<'fmm, T, U: SourceToTargetData> Fmm<T> for KiFmm<SingleNodeFmmTree<'fmm, T>, U>
-// where
-//     T: Float,
-//     Self: SourceToTargetHomogenous,
-// {
-//     fn evaluate_vec(&self, eval_type: EvalType, charges: &[T], result: &mut [T]) {
-//         match eval_type {
-//             EvalType::Value => println!("evaluating potentials"),
-//             EvalType::ValueDeriv => println!("evaluating potentials and derivatives"),
-//         }
-//     }
-//     fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T], result: &mut [T]) {}
-// }
-
-impl<'fmm, T, U> Fmm<T> for KiFmm<MultiNodeFmmTree<'fmm, T>, U>
+impl<'fmm, T, U> Fmm for KiFmm<MultiNodeFmmTree<'fmm, T>, U>
 where
     T: Float,
     U: SourceToTargetData,
     Self: SourceToTargetHomogenousScaleInvariant,
 {
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T], result: &mut [T]) {
+    type T = T;
+
+    fn evaluate_vec(&self, eval_type: EvalType, charges: &[Self::T], result: &mut [Self::T]) {
         match eval_type {
             EvalType::Value => println!(
                 "evaluating potentials multinode rank; {:?} with vector of charges",
@@ -122,7 +104,7 @@ where
         }
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T], result: &mut [T]) {
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[Self::T], result: &mut [Self::T]) {
         match eval_type {
             EvalType::Value => println!(
                 "evaluating potentials multinode rank; {:?} with matrix of charges",
@@ -136,13 +118,16 @@ where
     }
 }
 
-impl<'fmm, T, U> Fmm<T> for KiFmm<SingleNodeFmmTree<'fmm, T>, U>
+impl<'fmm, T, U> Fmm for KiFmm<SingleNodeFmmTree<'fmm, T>, U>
 where
     T: Float,
     U: SourceToTargetData,
     Self: SourceToTargetHomogenousScaleInvariant,
 {
-    fn evaluate_vec(&self, eval_type: EvalType, charges: &[T], result: &mut [T]) {
+    type T = T;
+
+    fn evaluate_vec(&self, eval_type: EvalType, charges: &[Self::T], result: &mut [Self::T]) {
+
         match eval_type {
             EvalType::Value => {
                 println!("evaluating potentials single node with vector of charges",)
@@ -153,7 +138,7 @@ where
         }
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T], result: &mut [T]) {
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[Self::T], result: &mut [Self::T]) {
         match eval_type {
             EvalType::Value => {
                 println!("evaluating potentials single node with matrix of charges",)

@@ -26,14 +26,11 @@ where
 }
 
 // Implemented over Concrete FMM
-pub trait Fmm<T>
-where
-    Self: SourceTranslation + TargetTranslation + SourceToTarget,
-    T: num_traits::Float,
+pub trait Fmm
 {
-    fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[T], result: &mut [T]);
-
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[T], result: &mut [T]);
+    type T: num_traits::Float;
+    fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[Self::T], result: &mut [Self::T]);
+    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[Self::T], result: &mut [Self::T]);
 }
 
 // Implemented over concrete tree
@@ -51,5 +48,5 @@ pub trait Kernel {}
 
 pub trait SourceToTargetData {
     fn set_expansion_order(&mut self, expansion_order: usize);
-    fn calculate_m2l_operators(&mut self, expansion_order: usize, depth: usize);
+    fn set_metadata(&mut self, expansion_order: usize, depth: usize);
 }

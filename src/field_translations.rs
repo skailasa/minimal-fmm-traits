@@ -1,8 +1,14 @@
+use core::num;
+
 use crate::traits::SourceToTargetData;
 
 #[derive(Default)]
-pub struct SourceToTargetDataSvd {
+pub struct SourceToTargetDataSvd<T>
+where
+    T: num_traits::Float
+{
     pub expansion_order: usize,
+    pub threshold: T
 }
 
 #[derive(Default)]
@@ -10,12 +16,15 @@ pub struct SourceToTargetDataFft {
     pub expansion_order: usize,
 }
 
-impl SourceToTargetData for SourceToTargetDataSvd {
+impl <T>SourceToTargetData for SourceToTargetDataSvd<T>
+where
+    T: num_traits::Float
+{
     fn set_expansion_order(&mut self, expansion_order: usize) {
         self.expansion_order = expansion_order
     }
 
-    fn calculate_m2l_operators(&mut self, expansion_order: usize, depth: usize) {}
+    fn set_metadata(&mut self, expansion_order: usize, depth: usize) {}
 }
 
 impl SourceToTargetData for SourceToTargetDataFft {
@@ -23,7 +32,7 @@ impl SourceToTargetData for SourceToTargetDataFft {
         self.expansion_order = expansion_order
     }
 
-    fn calculate_m2l_operators(&mut self, expansion_order: usize, depth: usize) {}
+    fn set_metadata(&mut self, expansion_order: usize, depth: usize) {}
 }
 
 impl SourceToTargetDataFft {
@@ -32,8 +41,11 @@ impl SourceToTargetDataFft {
     }
 }
 
-impl SourceToTargetDataSvd {
-    pub fn new() -> Self {
-        SourceToTargetDataSvd { expansion_order: 1 }
+impl <T>SourceToTargetDataSvd<T>
+where
+    T: num_traits::Float
+{
+    pub fn new(threshold: T) -> Self {
+        SourceToTargetDataSvd::<T> { expansion_order: 1, threshold}
     }
 }
