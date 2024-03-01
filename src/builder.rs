@@ -4,6 +4,7 @@ use num_traits::Float;
 use crate::{
     domain::Domain3D,
     fmm::{ncoeffs, KiFmm},
+    other::EvalType,
     traits::{Kernel, ScaleInvariantHomogenousKernel, SourceToTargetData, Tree},
     tree::{MultiNodeFmmTree, MultiNodeTree, SingleNodeFmmTree, SingleNodeTree},
 };
@@ -23,6 +24,7 @@ where
     expansion_order: Option<usize>,
     ncoeffs: Option<usize>,
     max_depth: Option<usize>,
+    eval_type: Option<EvalType>,
 }
 
 #[derive(Default)]
@@ -42,6 +44,7 @@ where
     comm: Option<U>,
     max_depth: Option<usize>,
     kernel: Option<W>,
+    eval_type: Option<EvalType>,
 }
 
 impl<'builder, T, U, V> KiFmmBuilderSingleNode<'builder, T, U, V>
@@ -61,6 +64,7 @@ where
             expansion_order: None,
             ncoeffs: None,
             max_depth: None,
+            eval_type: None,
         }
     }
 
@@ -116,13 +120,19 @@ where
         }
     }
 
-    pub fn parameters(mut self, expansion_order: usize, kernel: V) -> Result<Self, String> {
+    pub fn parameters(
+        mut self,
+        expansion_order: usize,
+        kernel: V,
+        eval_type: EvalType,
+    ) -> Result<Self, String> {
         if self.tree.is_none() {
             Err("Must build tree before specifying FMM parameters".to_string())
         } else {
             self.expansion_order = Some(expansion_order);
             self.ncoeffs = Some(ncoeffs(expansion_order));
             self.kernel = Some(kernel);
+            self.eval_type = Some(eval_type);
             Ok(self)
         }
     }
@@ -153,10 +163,23 @@ where
 
     // Finalize and build the KiFmm
     pub fn build(self) -> Result<KiFmm<SingleNodeFmmTree<'builder, U>, T, V>, String> {
-        if self.tree.is_none() || self.source_to_target.is_none() || self.expansion_order.is_none()
+        if self.tree.is_none()
+            || self.source_to_target.is_none()
+            || self.expansion_order.is_none()
+            || self.eval_type.is_none()
         {
             Err("Missing fields for KiFmm".to_string())
         } else {
+            let eval_type = self.eval_type.unwrap();
+            match eval_type {
+                EvalType::Value => {
+                    println!("Building Potentials FMM")
+                }
+                EvalType::ValueDeriv => {
+                    println!("Building potentials + derivs FMM")
+                }
+            }
+
             Ok(KiFmm {
                 tree: self.tree.unwrap(),
                 field_translation_data: self.source_to_target.unwrap(),
@@ -187,6 +210,7 @@ where
             ncoeffs: None,
             max_depth: None,
             kernel: None,
+            eval_type: None,
         }
     }
 
@@ -254,13 +278,19 @@ where
         }
     }
 
-    pub fn parameters(mut self, expansion_order: usize, kernel: W) -> Result<Self, String> {
+    pub fn parameters(
+        mut self,
+        expansion_order: usize,
+        kernel: W,
+        eval_type: EvalType,
+    ) -> Result<Self, String> {
         if self.tree.is_none() {
             Err("Must build tree before specifying FMM parameters".to_string())
         } else {
             self.expansion_order = Some(expansion_order);
             self.ncoeffs = Some(ncoeffs(expansion_order));
             self.kernel = Some(kernel);
+            self.eval_type = Some(eval_type);
             Ok(self)
         }
     }
@@ -287,10 +317,23 @@ where
 
     // Finalize and build the KiFmm
     pub fn build(self) -> Result<KiFmm<MultiNodeFmmTree<'builder, V>, T, W>, String> {
-        if self.tree.is_none() || self.source_to_target.is_none() || self.expansion_order.is_none()
+        if self.tree.is_none()
+            || self.source_to_target.is_none()
+            || self.expansion_order.is_none()
+            || self.eval_type.is_none()
         {
             Err("Missing fields for KiFmm".to_string())
         } else {
+            let eval_type = self.eval_type.unwrap();
+            match eval_type {
+                EvalType::Value => {
+                    println!("Building Potentials FMM")
+                }
+                EvalType::ValueDeriv => {
+                    println!("Building potentials + derivs FMM")
+                }
+            }
+
             Ok(KiFmm {
                 tree: self.tree.unwrap(),
                 field_translation_data: self.source_to_target.unwrap(),

@@ -34,8 +34,8 @@ where
 /// T is an associated type, as we're not re-implementing this for different floating point types.
 pub trait Fmm {
     type T: num_traits::Float;
-    fn evaluate_vec(&self, eval_type: EvalType, charges_vec: &[Self::T], result: &mut [Self::T]);
-    fn evaluate_mat(&self, eval_type: EvalType, charges_mat: &[Self::T], result: &mut [Self::T]);
+    fn evaluate_vec(&self, charges_vec: &[Self::T], result: &mut [Self::T]);
+    fn evaluate_mat(&self, charges_mat: &[Self::T], result: &mut [Self::T]);
     fn get_expansion_order(&self) -> usize;
     fn get_ncoeffs(&self) -> usize;
 }

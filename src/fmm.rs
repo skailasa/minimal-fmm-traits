@@ -116,30 +116,12 @@ where
 {
     type T = T;
 
-    fn evaluate_vec(&self, eval_type: EvalType, _charges: &[Self::T], _result: &mut [Self::T]) {
-        match eval_type {
-            EvalType::Value => println!(
-                "evaluating potentials multinode rank; {:?} with vector of charges",
-                self.tree.comm.rank(),
-            ),
-            EvalType::ValueDeriv => println!(
-                "evaluating potentials and derivatives multinode rank: {:?}  with vector of charges",
-                self.tree.comm.rank(),
-            ),
-        }
+    fn evaluate_vec(&self, _charges: &[Self::T], _result: &mut [Self::T]) {
+        println!("evaluating matrix vector")
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, _charges_mat: &[Self::T], _result: &mut [Self::T]) {
-        match eval_type {
-            EvalType::Value => println!(
-                "evaluating potentials multinode rank; {:?} with matrix of charges",
-                self.tree.comm.rank(),
-            ),
-            EvalType::ValueDeriv => println!(
-                "evaluating potentials and derivatives multinode rank: {:?} with matrix of charges",
-                self.tree.comm.rank(),
-            ),
-        }
+    fn evaluate_mat(&self, _charges_mat: &[Self::T], _result: &mut [Self::T]) {
+        println!("evaluating matrix matrix")
     }
 
     fn get_expansion_order(&self) -> usize {
@@ -160,26 +142,12 @@ where
 {
     type T = T;
 
-    fn evaluate_vec(&self, eval_type: EvalType, _charges: &[Self::T], _result: &mut [Self::T]) {
-        match eval_type {
-            EvalType::Value => {
-                println!("evaluating potentials single node with vector of charges",)
-            }
-            EvalType::ValueDeriv => {
-                println!("evaluating potentials and derivatives with vector of charges",)
-            }
-        }
+    fn evaluate_vec(&self, _charges: &[Self::T], _result: &mut [Self::T]) {
+        println!("evaluating matrix vector")
     }
 
-    fn evaluate_mat(&self, eval_type: EvalType, _charges_mat: &[Self::T], _result: &mut [Self::T]) {
-        match eval_type {
-            EvalType::Value => {
-                println!("evaluating potentials single node with matrix of charges",)
-            }
-            EvalType::ValueDeriv => {
-                println!("evaluating potentials and derivatives single node with matrix of charges",)
-            }
-        }
+    fn evaluate_mat(&self, _charges_mat: &[Self::T], _result: &mut [Self::T]) {
+        println!("evaluating matrix matrix")
     }
 
     fn get_expansion_order(&self) -> usize {
